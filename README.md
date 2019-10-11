@@ -2,7 +2,7 @@ SL2P_L8_OLI_v01
 ----------
 ----------
 
-SL2P processor [1} was adapted for adapted for estimating leaf area index (LAI), fraction canopy cover (FCOVER), fraction of absorbed photosynthetically active radiation (FAPAR), canopy chlorophyll content (CCC) and canopy water content (CWC)from Landsat-8/OLI surface reflectance data. Quality indicators (flags maps) are computed for each product.
+SL2P processor [1] was adapted for adapted for estimating leaf area index (LAI), fraction canopy cover (FCOVER), fraction of absorbed photosynthetically active radiation (FAPAR), canopy chlorophyll content (CCC) and canopy water content (CWC)from Landsat-8/OLI surface reflectance data. Quality indicators (flags maps) are computed for each product.
 
 The algorithm generates a water_shadow_cloud_snow (WSCS) mask. 
 
@@ -24,8 +24,6 @@ Inputs:
 
 Input data could be obtained from : https://espa.cr.usgs.gov/
 
-Samples of input data are available in: https://drive.google.com/drive/folders/1iO0L4uTkF0vOy0VFM0ZDgd6vpfzbwv7y
-
 Input maps should be provided in separalte .tif files at 30m spatial resolution.
 
 Outputs:
@@ -37,7 +35,7 @@ Outputs:
 
 Use:
 --------
-SL2P_L8_OLI_v_01(['.\Samples_S2L2A_data\'], 'S2A_MSIL2A_20171026T110131_N0206_R094_T30SWJ_20171026T144303')
+SL2P_L8_OLI_v_01(['.\Samples_L8_OLIdata\'], 'LC080310252016070201T1-SC20171121174622')
 
 
 References:
