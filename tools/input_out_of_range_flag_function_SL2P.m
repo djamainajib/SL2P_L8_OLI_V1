@@ -1,24 +1,15 @@
-function [flag]=input_out_of_range_flag_function (NNT,data,r,c)
-Definition_Domain=NNT.Definition_Domain;
+function [flag]=input_out_of_range_flag_function (data,r,c)
 
-
+convex_hull=importdata('aux_data\L8_SL2P_convex_hull.mat');
 Nb_Cas=length(data);
-CL=ceil((data-repmat(Definition_Domain.Extreme(1,:),Nb_Cas,1))./repmat(Definition_Domain.Extreme(2,:)-Definition_Domain.Extreme(1,:),Nb_Cas,1).*Definition_Domain.Step);
-CL(CL>99)=99;
-CL(CL<0)=99;
+CL=ceil((data-repmat(convex_hull.Extreme(1,:),Nb_Cas,1))./repmat(convex_hull.Extreme(2,:)-convex_hull.Extreme(1,:),Nb_Cas,1).*convex_hull.Step);
+CL(CL>99)=0;
+CL(CL<0)=0;
+
 UCL=0;
-for ii=1:size(CL,2),
-    UCL=UCL+CL(:,ii)*(100^(ii-1));
-end;
+UCL=CL*(100.^[0:size(CL,2)-1])';
 
-%%%%
-CL_ref=Definition_Domain.Grid;
-UCL_ref=0;
-for ii=1:size(CL_ref,2),
-    UCL_ref=UCL_ref+CL_ref(:,ii)*(100^(ii-1));
-end;
-
-flag=reshape(~ismember(UCL,UCL_ref),r,c);
+flag=reshape(~ismember(UCL,convex_hull.data),r,c);
 end
 
 
