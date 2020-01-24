@@ -43,7 +43,13 @@ disp({'--Loading NNET--------------------------------------'});
 NET_estim=importdata('aux_data\L8_OLI_NNET.mat');
 
 %% 2.4 Computing input_flags 
-input_out_of_range=input_out_of_range_flag_function_SL2P(NET_estim,Input_NNT(:,3:end-3),r,c);
+
+input_out_of_range=input_out_of_range_flag_function_SL2P(Input_NNT(:,3:end-3),r,c);
+
+
+
+
+
 %% 5. Simulating biophysical parameters (SL2P).....................................
 disp({'--Simulating vegetation biophysical variables ------'});
 NNT_OUT=[];
