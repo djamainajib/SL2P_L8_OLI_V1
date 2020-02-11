@@ -37,19 +37,14 @@ Input_NNT(:,3:end-3)=Input_NNT(:,3:end-3)/10000;
 Input_NNT(:,end-2:end)=Input_NNT(:,end-2:end)/100;
 Input_NNT(:,end-2:end)=cos(deg2rad(Input_NNT(:,end-2:end))); 
 NNT_IN=Input_NNT(:,3:end)';
+
 close(h)
 %% 3. Loading NET
 disp({'--Loading NNET--------------------------------------'});
-NET_estim=importdata('aux_data\L8_OLI_NNET.mat');
-
+NET_estim=importdata('.\tools\aux_data\L8_OLI_NNET.mat');
+NET_uncer=importdata('.\tools\aux_data\L8_OLI_SL2P_NNT_unc.mat');
 %% 2.4 Computing input_flags 
-
 input_out_of_range=input_out_of_range_flag_function_SL2P(Input_NNT(:,3:end-3),r,c);
-
-
-
-
-
 %% 5. Simulating biophysical parameters (SL2P).....................................
 disp({'--Simulating vegetation biophysical variables ------'});
 NNT_OUT=[];
@@ -60,7 +55,10 @@ for ivar=1:length(bio_vars),
     bio_sim= [Input_NNT(:,1:2),NaN+Input_NNT(:,1)];
 
     eval(['NET_ivar= NET_estim.',bio,'.NET;']);
+    eval(['NET_unc       = NET_uncer.',bio,'.NET;']);
+    
     bio_sim (:,3)= sim(NET_ivar, NNT_IN)';
+    bio_sim (:,4)= sim(NET_unc, [NNT_IN(6:end,:);NNT_IN(1:5,:)])';    
     %% Creating output_thresholded_to_min/max_outpout flag
     eval(['bounding_box=BIO_VAR_bounding_box.',bio,';']);
     output_thresholded_to_min_outpout=0*bio_sim(:,3);
@@ -85,6 +83,7 @@ for ivar=1:length(bio_vars),
         (2^3)*output_too_low+(2^4)*output_too_high;
 
     eval(['NNT_OUT.',lower(bio),'=reshape(bio_sim(:,3),r,c);']);
+    eval(['NNT_OUT.',lower(bio),'_Uncertainties=reshape(bio_sim(:,4),r,c);']);
     eval(['NNT_OUT.',lower(bio),'_flags=flags;']);
     
     eval(['NNT_OUT.',lower(bio),'_input_out_of_range= input_out_of_range;']);
@@ -92,12 +91,12 @@ for ivar=1:length(bio_vars),
     eval(['NNT_OUT.',lower(bio),'_output_thresholded_to_max_outpout= output_thresholded_to_max_outpout;']);
     eval(['NNT_OUT.',lower(bio),'_output_too_low= output_too_low;']);
     eval(['NNT_OUT.',lower(bio),'_output_too_high= output_too_high;']);
-
     %% exporting tif files
     bbox=Ib.BoundingBox;
     bit_depth=32;
     geotiffwrite([out_path,file_name,'_',lower(bio),'.tif'], bbox, eval(['NNT_OUT.',lower(bio)]), bit_depth, Ib);
-    geotiffwrite([out_path,file_name,'_',lower(bio),'_flags.tif'], bbox, eval(['NNT_OUT.',lower(bio),'_flags']), bit_depth, Ib);       
+    geotiffwrite([out_path,file_name,'_',lower(bio),'_uncertainties.tif'], bbox, eval(['NNT_OUT.',lower(bio),'_Uncertainties']), bit_depth, Ib);
+    geotiffwrite([out_path,file_name,'_',lower(bio),'_flags.tif'], bbox, eval(['NNT_OUT.',lower(bio),'_flags']), bit_depth, Ib);        
 end;
 %% water_shadow_cloud_snow (WSCS) mask
 file_name_band=dir([varargin{1},varargin{2},'\*pixel_qa*.tif']);
